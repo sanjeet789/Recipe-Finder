@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Finder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Basic reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #ffe8cc; /* Changed to light orange background */
+        }
+        
+        /* Header styles */
+        header {
+            background-color: #ffd8a8;
+            padding: 15px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .logo a {
+            color: white;
+            font-size: 24px;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            align-items: center;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            transition: opacity 0.3s;
+        }
+        
+        .nav-links a:hover {
+            opacity: 0.8;
+        }
+        
+        .user-name {
+            color: white;
+            margin-left: 20px;
+            padding: 4px 10px;
+            background-color: rgba(255,255,255,0.2);
+            border-radius: 4px;
+        }
+        
+        /* Main content */
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Error message */
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            border: 1px solid #f5c6cb;
+        }
+        
+        /* Mobile menu toggle */
+        .menu-toggle {
+            display: none;
+            font-size: 24px;
+            color: white;
+            cursor: pointer;
+        }
+        
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+            
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 70px;
+                left: 0;
+                right: 0;
+                background-color: #ffd8a8;
+                flex-direction: column;
+                padding: 20px;
+                z-index: 100;
+            }
+            
+            .nav-links.active {
+                display: flex;
+            }
+            
+            .nav-links a, .user-name {
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <a href="/">RecipeFinder</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle">☰</div>
+            <div class="nav-links" id="nav-links">
+                <a href="/">Home</a>
+                <a href="/search">Search Recipes</a>
+                <% if (typeof user !== 'undefined' && user) { %>
+                    <a href="/favorites">My Favorites</a>
+                    <a href="/logout">Logout</a>
+                    <span class="user-name">Hello, <%= user.name %></span>
+                <% } else { %>
+                    <a href="/login">Login</a>
+                    <a href="/register">Register</a>
+                <% } %>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <% if (typeof error !== 'undefined' && error) { %>
+            <div class="error-message"><%= error %></div>
+        <% } %>
+        
+        <!-- Content will be inserted here -->
+    </main>
+
+    <script>
+        // Simple mobile menu toggle
+        document.getElementById('menu-toggle').addEventListener('click', function() {
+            document.getElementById('nav-links').classList.toggle('active');
+        });
+    </script>
+</body>
+</html>

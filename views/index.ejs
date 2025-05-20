@@ -1,0 +1,662 @@
+<%- include('partials/header') %>
+
+<div class="home-wrapper">
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Discover Delicious Recipes</h1>
+            <p class="hero-subtitle">Find the perfect recipe based on ingredients you have or dishes you love</p>
+            
+            <form action="/search" method="GET" class="hero-search-form">
+                <div class="search-input-container">
+                    <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" name="query" placeholder="Search for recipes or ingredients...">
+                </div>
+                <button type="submit" class="search-btn">Find Recipes</button>
+            </form>
+            
+            <div class="popular-searches">
+                <span>Popular searches:</span>
+                <a href="/search?query=quick dinner">quick dinner</a>
+                <a href="/search?query=pasta">pasta</a>
+                <a href="/search?query=vegetarian">vegetarian</a>
+            </div>
+        </div>
+        
+        <div class="hero-decoration">
+            <div class="recipe-icon-group">
+                <div class="recipe-icon-bubble recipe-icon-1">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M15 11h.01M11 15h.01M16 16h.01M11 11h.01M13 13h.01M19 3h-7l-3 3H6a2 2 0 0 0-2 2v12c0 1.1.9 2 2 2h16a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z"></path>
+                    </svg>
+                </div>
+                <div class="recipe-icon-bubble recipe-icon-2">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
+                        <line x1="4" y1="22" x2="4" y2="15"></line>
+                    </svg>
+                </div>
+                <div class="recipe-icon-bubble recipe-icon-3">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
+                        <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
+                        <line x1="6" y1="1" x2="6" y2="4"></line>
+                        <line x1="10" y1="1" x2="10" y2="4"></line>
+                        <line x1="14" y1="1" x2="14" y2="4"></line>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <% if (user) { %>
+        <section class="quick-actions">
+            <div class="container">
+                <h2>Welcome Back, <%= user.name %>!</h2>
+                <div class="action-cards">
+                    <a href="/search" class="action-card">
+                        <div class="action-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                        </div>
+                        <h3>Search Recipes</h3>
+                        <p>Find recipes by ingredients or name</p>
+                    </a>
+                    <a href="/favorites" class="action-card">
+                        <div class="action-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>
+                        </div>
+                        <h3>Your Favorites</h3>
+                        <p>Access your saved recipes</p>
+                    </a>
+                    <a href="/recent" class="action-card">
+                        <div class="action-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                        </div>
+                        <h3>Recent Activity</h3>
+                        <p>See recipes you recently viewed</p>
+                    </a>
+                </div>
+            </div>
+        </section>
+    <% } else { %>
+        <section class="auth-prompts">
+            <div class="container">
+                <div class="auth-content">
+                    <div class="auth-text">
+                        <h2>Personalize Your Recipe Experience</h2>
+                        <p>Create an account to save your favorite recipes, get personalized recommendations, and build your own digital cookbook.</p>
+                        <div class="auth-buttons">
+                            <a href="/login" class="btn btn-outline">Login</a>
+                            <a href="/register" class="btn btn-primary">Create Account</a>
+                        </div>
+                    </div>
+                    <div class="auth-features">
+                        <div class="feature">
+                            <div class="feature-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                </svg>
+                            </div>
+                            <h3>Save Favorites</h3>
+                            <p>Keep all your beloved recipes in one place</p>
+                        </div>
+                        <div class="feature">
+                            <div class="feature-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                                    <polyline points="10 9 9 9 8 9"></polyline>
+                                </svg>
+                            </div>
+                            <h3>Create Collections</h3>
+                            <p>Organize recipes into your own collections</p>
+                        </div>
+                        <div class="feature">
+                            <div class="feature-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="9" cy="7" r="4"></circle>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                </svg>
+                            </div>
+                            <h3>Share Recipes</h3>
+                            <p>Share your discoveries with friends and family</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    <% } %>
+    
+    <section class="categories-section">
+        <div class="container">
+            <h2>Explore Recipe Categories</h2>
+            <div class="category-grid">
+                <a href="/category/quick-meals" class="category-card">
+                    <div class="category-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                    </div>
+                    <h3>Quick Meals</h3>
+                    <p>Ready in 30 minutes or less</p>
+                </a>
+                <a href="/category/vegetarian" class="category-card">
+                    <div class="category-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M2 22s4-2 8-2 8 2 8 2"></path>
+                            <circle cx="12" cy="8" r="5"></circle>
+                            <path d="M12 3v2"></path>
+                            <path d="M12 16v3"></path>
+                            <path d="M6.73 5.73 8.5 7.5"></path>
+                            <path d="M15.5 7.5l1.77-1.77"></path>
+                        </svg>
+                    </div>
+                    <h3>Vegetarian</h3>
+                    <p>Plant-based delicious options</p>
+                </a>
+                <a href="/category/desserts" class="category-card">
+                    <div class="category-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"></path>
+                        </svg>
+                    </div>
+                    <h3>Desserts</h3>
+                    <p>Sweet treats and baked goods</p>
+                </a>
+                <a href="/category/healthy" class="category-card">
+                    <div class="category-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                    </div>
+                    <h3>Healthy Options</h3>
+                    <p>Nutritious and balanced meals</p>
+                </a>
+            </div>
+        </div>
+    </section>
+</div>
+
+<style>
+    .home-wrapper {
+        background-color: #f9f7f5;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+    
+    /* Hero Section */
+    .hero {
+        background: linear-gradient(135deg, #fff5eb 0%, #f9f7f5 100%);
+        padding: 4rem 0;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .hero-content {
+        max-width: 700px;
+        margin: 0 auto;
+        text-align: center;
+        position: relative;
+        z-index: 2;
+        padding: 0 1rem;
+    }
+    
+    .hero h1 {
+        font-size: 3rem;
+        color: #333;
+        margin-bottom: 1rem;
+        font-weight: 700;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.25rem;
+        color: #666;
+        margin-bottom: 2rem;
+    }
+    
+    .hero-search-form {
+        display: flex;
+        max-width: 600px;
+        margin: 0 auto 1.5rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .search-input-container {
+        position: relative;
+        flex: 1;
+        background-color: white;
+    }
+    
+    .search-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #999;
+    }
+    
+    .hero-search-form input {
+        width: 100%;
+        padding: 1rem 1rem 1rem 45px;
+        border: none;
+        outline: none;
+        font-size: 1rem;
+    }
+    
+    .search-btn {
+        padding: 0 1.5rem;
+        background-color: #e67e22;
+        color: white;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    
+    .search-btn:hover {
+        background-color: #d35400;
+    }
+    
+    .popular-searches {
+        color: #777;
+        font-size: 0.9rem;
+    }
+    
+    .popular-searches span {
+        margin-right: 0.5rem;
+    }
+    
+    .popular-searches a {
+        color: #e67e22;
+        text-decoration: none;
+        margin: 0 0.5rem;
+        transition: color 0.2s;
+    }
+    
+    .popular-searches a:hover {
+        color: #d35400;
+        text-decoration: underline;
+    }
+    
+    .hero-decoration {
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 40%;
+        z-index: 1;
+        pointer-events: none;
+    }
+    
+    .recipe-icon-group {
+        position: relative;
+        height: 100%;
+    }
+    
+    .recipe-icon-bubble {
+        position: absolute;
+        background-color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        color: #e67e22;
+    }
+    
+    .recipe-icon-1 {
+        width: 100px;
+        height: 100px;
+        top: 30%;
+        left: 10%;
+        animation: float 6s ease-in-out infinite;
+    }
+    
+    .recipe-icon-2 {
+        width: 80px;
+        height: 80px;
+        top: 20%;
+        right: 30%;
+        animation: float 7s ease-in-out infinite 1s;
+    }
+    
+    .recipe-icon-3 {
+        width: 120px;
+        height: 120px;
+        bottom: 25%;
+        right: 15%;
+        animation: float 8s ease-in-out infinite 0.5s;
+    }
+    
+    @keyframes float {
+        0% {
+            transform: translateY(0px);
+        }
+        50% {
+            transform: translateY(-15px);
+        }
+        100% {
+            transform: translateY(0px);
+        }
+    }
+    
+    /* Quick Actions Section */
+    .quick-actions {
+        padding: 3rem 0;
+        background-color: white;
+    }
+    
+    .quick-actions h2 {
+        text-align: center;
+        margin-bottom: 2rem;
+        color: #333;
+        font-size: 2rem;
+    }
+    
+    .action-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .action-card {
+        background-color: #f9f7f5;
+        border-radius: 8px;
+        padding: 2rem 1.5rem;
+        text-align: center;
+        text-decoration: none;
+        color: #333;
+        transition: all 0.3s;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+    }
+    
+    .action-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+    
+    .action-icon {
+        width: 60px;
+        height: 60px;
+        margin: 0 auto 1.5rem;
+        background-color: rgba(230, 126, 34, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #e67e22;
+    }
+    
+    .action-icon svg {
+        width: 30px;
+        height: 30px;
+    }
+    
+    .action-card h3 {
+        margin: 0 0 0.75rem;
+        font-size: 1.3rem;
+    }
+    
+    .action-card p {
+        margin: 0;
+        color: #666;
+        font-size: 0.95rem;
+    }
+    
+    /* Auth Prompts Section */
+    .auth-prompts {
+        padding: 3rem 0;
+        background-color: white;
+    }
+    
+    .auth-content {
+        display: flex;
+        align-items: center;
+        gap: 3rem;
+    }
+    
+    .auth-text {
+        flex: 1;
+    }
+    
+    .auth-text h2 {
+        margin-top: 0;
+        color: #333;
+        font-size: 2rem;
+    }
+    
+    .auth-text p {
+        color: #666;
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+        line-height: 1.6;
+    }
+    
+    .auth-buttons {
+        display: flex;
+        gap: 1rem;
+    }
+    
+    .btn {
+        display: inline-block;
+        padding: 0.8rem 1.5rem;
+        border-radius: 4px;
+        font-weight: 600;
+        text-align: center;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-primary {
+        background-color: #e67e22;
+        color: white;
+        border: none;
+    }
+    
+    .btn-primary:hover {
+        background-color: #d35400;
+    }
+    
+    .btn-outline {
+        background-color: transparent;
+        color: #e67e22;
+        border: 1px solid #e67e22;
+    }
+    
+    .btn-outline:hover {
+        background-color: #e67e22;
+        color: white;
+    }
+    
+    .auth-features {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    
+    .feature {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .feature-icon {
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
+        background-color: rgba(230, 126, 34, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #e67e22;
+    }
+    
+    .feature-icon svg {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .feature h3 {
+        margin: 0 0 0.3rem;
+        font-size: 1.1rem;
+    }
+    
+    .feature p {
+        margin: 0;
+        color: #666;
+        font-size: 0.9rem;
+    }
+    
+    /* Categories Section */
+    .categories-section {
+        padding: 4rem 0;
+        background-color: #f9f7f5;
+    }
+    
+    .categories-section h2 {
+        text-align: center;
+        margin-bottom: 2rem;
+        color: #333;
+        font-size: 2rem;
+    }
+    
+    .category-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .category-card {
+        background-color: white;
+        border-radius: 8px;
+        padding: 2rem 1.5rem;
+        text-align: center;
+        text-decoration: none;
+        color: #333;
+        transition: all 0.3s;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    }
+    
+    .category-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        background-color: #fff5eb;
+    }
+    
+    .category-icon {
+        width: 70px;
+        height: 70px;
+        margin: 0 auto 1.5rem;
+        background-color: rgba(230, 126, 34, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #e67e22;
+    }
+    
+    .category-icon svg {
+        width: 35px;
+        height: 35px;
+    }
+    
+    .category-card h3 {
+        margin: 0 0 0.5rem;
+        font-size: 1.3rem;
+    }
+    
+    .category-card p {
+        margin: 0;
+        color: #666;
+        font-size: 0.95rem;
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 992px) {
+        .hero h1 {
+            font-size: 2.5rem;
+        }
+        
+        .hero-decoration {
+            opacity: 0.3;
+            width: 100%;
+        }
+        
+        .auth-content {
+            flex-direction: column;
+            gap: 2rem;
+        }
+        
+        .auth-features {
+            width: 100%;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .hero {
+            padding: 3rem 0;
+        }
+        
+        .hero h1 {
+            font-size: 2rem;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.1rem;
+        }
+        
+        .hero-search-form {
+            flex-direction: column;
+        }
+        
+        .search-btn {
+            padding: 0.75rem;
+        }
+        
+        .recipe-icon-1, .recipe-icon-2, .recipe-icon-3 {
+            display: none;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .action-cards, .category-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .auth-buttons {
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+    }
+</style>
+
+<%- include('partials/footer') %>

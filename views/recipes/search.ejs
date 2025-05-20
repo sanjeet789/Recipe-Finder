@@ -1,0 +1,647 @@
+<%- include('../partials/header') %>
+
+<section class="search-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Search Recipes</h2>
+        </div>
+        
+        <div class="search-container">
+            <form action="/search" method="POST" class="search-form">
+                <div class="search-input-wrapper">
+                    <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" name="query" value="<%= query || '' %>" 
+                        placeholder="What ingredients do you have? (e.g., chicken, garlic, onion)" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Find Recipes</button>
+            </form>
+        </div>
+        
+        <% if (typeof error !== 'undefined' && error) { %>
+            <div class="error-message">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <span><%= error %></span>
+            </div>
+        <% } %>
+        
+        <% if (typeof results !== 'undefined' && results) { %>
+            <div class="search-results">
+                <% if (results.length === 0) { %>
+                    <div class="no-results">
+                        <div class="no-results-icon">
+                            <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                <line x1="8" y1="11" x2="14" y2="11" stroke-width="2"></line>
+                            </svg>
+                        </div>
+                        <h3>No recipes found</h3>
+                        <p>No matches for your ingredients. Try these combinations:</p>
+                        <div class="suggestion-chips">
+                            <a href="/search" class="suggestion-chip" onclick="document.querySelector('input[name=query]').value='chicken and rice'; document.querySelector('form').submit(); return false;">chicken and rice</a>
+                            <a href="/search" class="suggestion-chip" onclick="document.querySelector('input[name=query]').value='pasta with tomato sauce'; document.querySelector('form').submit(); return false;">pasta with tomato sauce</a>
+                            <a href="/search" class="suggestion-chip" onclick="document.querySelector('input[name=query]').value='vegetarian options'; document.querySelector('form').submit(); return false;">vegetarian options</a>
+                        </div>
+                    </div>
+                <% } else { %>
+                    <div class="results-header">
+                        <h3>Recommended Recipes</h3>
+                        <% if (query) { %>
+                            <div class="search-tag">
+                                <span>Results for: <strong><%= query %></strong></span>
+                                <a href="/search" class="clear-search" title="Clear search">×</a>
+                            </div>
+                        <% } %>
+                    </div>
+                    
+                    <div class="recipe-count-display">
+                        <span><%= results.length %> <%= results.length === 1 ? 'recipe' : 'recipes' %> found</span>
+                    </div>
+                    
+                    <div class="recipe-grid">
+                        <% results.forEach((recipe) => { %>
+                            <div class="recipe-card">
+                                <div class="recipe-card-inner">
+                                    <div class="recipe-thumbnail">
+                                        <a href="/recipe/<%= recipe.id %>">
+                                            <div class="recipe-icon">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M15 3v18M7 3v18M19 9h-4M5 9h4M5 15h4M19 15h-4M3 3h18v18H3z"/>
+                                                </svg>
+                                            </div>
+                                            <div class="recipe-initial"><%= recipe.Title.charAt(0).toUpperCase() %></div>
+                                        </a>
+                                    </div>
+                                    <div class="recipe-content">
+                                        <h3><a href="/recipe/<%= recipe.id %>"><%= recipe.Title %></a></h3>
+                                        <div class="recipe-meta">
+                                            <% if (recipe.Rating) { %>
+                                            <span class="meta-item">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon">
+                                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                                </svg>
+                                                <%= recipe.Rating %>
+                                            </span>
+                                            <% } %>
+                                            <% if (recipe.Cook_Time) { %>
+                                            <span class="meta-item">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon">
+                                                    <circle cx="12" cy="12" r="10"></circle>
+                                                    <polyline points="12 6 12 12 16 14"></polyline>
+                                                </svg>
+                                                <%= recipe.Cook_Time %>
+                                            </span>
+                                            <% } %>
+                                        </div>
+                                        <p class="recipe-ingredients">
+                                            <strong>Ingredients:</strong> 
+                                            <%= recipe.Cleaned_Ingredients.split(',').slice(0, 3).join(', ') %>
+                                            <% if(recipe.Cleaned_Ingredients.split(',').length > 3) { %>...
+                                            <% } %>
+                                        </p>
+                                        <div class="recipe-actions">
+                                            <a href="/recipe/<%= recipe.id %>" class="btn btn-secondary">View Recipe</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                <% } %>
+            </div>
+        <% } else { %>
+            <div class="search-suggestions">
+                <h3>Popular Ingredients</h3>
+                <div class="popular-ingredients">
+                    <div class="ingredient-tag" onclick="document.querySelector('input[name=query]').value='chicken'; document.querySelector('form').submit();">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"></path>
+                            <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                        </svg>
+                        <span>Chicken</span>
+                    </div>
+                    <div class="ingredient-tag" onclick="document.querySelector('input[name=query]').value='pasta'; document.querySelector('form').submit();">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"></path>
+                            <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                        </svg>
+                        <span>Pasta</span>
+                    </div>
+                    <div class="ingredient-tag" onclick="document.querySelector('input[name=query]').value='beef'; document.querySelector('form').submit();">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"></path>
+                            <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                        </svg>
+                        <span>Beef</span>
+                    </div>
+                    <div class="ingredient-tag" onclick="document.querySelector('input[name=query]').value='vegetarian'; document.querySelector('form').submit();">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"></path>
+                            <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                        </svg>
+                        <span>Vegetarian</span>
+                    </div>
+                    <div class="ingredient-tag" onclick="document.querySelector('input[name=query]').value='dessert'; document.querySelector('form').submit();">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"></path>
+                            <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                        </svg>
+                        <span>Dessert</span>
+                    </div>
+                </div>
+                
+                <h3>Quick Recipe Ideas</h3>
+                <div class="quick-ideas">
+                    <div class="idea-card" onclick="document.querySelector('input[name=query]').value='quick dinner'; document.querySelector('form').submit();">
+                        <div class="idea-icon">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                        </div>
+                        <h4>Quick Dinner Ideas</h4>
+                        <p>Ready in 30 minutes or less</p>
+                    </div>
+                    <div class="idea-card" onclick="document.querySelector('input[name=query]').value='healthy'; document.querySelector('form').submit();">
+                        <div class="idea-icon">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M22 11.08V12a10 10 0 11-5.93-9.14"></path>
+                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                            </svg>
+                        </div>
+                        <h4>Healthy Options</h4>
+                        <p>Nutritious and delicious meals</p>
+                    </div>
+                    <div class="idea-card" onclick="document.querySelector('input[name=query]').value='budget friendly'; document.querySelector('form').submit();">
+                        <div class="idea-icon">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="1" x2="12" y2="23"></line>
+                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                            </svg>
+                        </div>
+                        <h4>Budget Friendly</h4>
+                        <p>Affordable ingredients for everyone</p>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+    </div>
+</section>
+
+<style>
+    .search-section {
+        padding: 3rem 0;
+        background-color: #f9f7f5;
+        min-height: 70vh;
+    }
+    
+    .container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+    
+    .section-header {
+        margin-bottom: 2rem;
+        border-bottom: 2px solid #eaeaea;
+        padding-bottom: 1rem;
+    }
+    
+    .section-header h2 {
+        font-size: 2rem;
+        color: #333;
+        margin: 0;
+        font-weight: 700;
+    }
+    
+    .search-container {
+        margin-bottom: 2.5rem;
+    }
+    
+    .search-form {
+        display: flex;
+        max-width: 800px;
+        margin: 0 auto;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .search-input-wrapper {
+        flex: 1;
+        position: relative;
+        display: flex;
+        align-items: center;
+        background-color: white;
+    }
+    
+    .search-icon {
+        position: absolute;
+        left: 15px;
+        color: #999;
+    }
+    
+    .search-form input {
+        flex: 1;
+        padding: 1rem 1rem 1rem 45px;
+        border: none;
+        font-size: 1rem;
+        outline: none;
+        width: 100%;
+        color: #333;
+    }
+    
+    .search-form button {
+        padding: 0 1.5rem;
+        border: none;
+        background-color: #e67e22;
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    
+    .search-form button:hover {
+        background-color: #d35400;
+    }
+    
+    .error-message {
+        display: flex;
+        align-items: center;
+        background-color: #fee;
+        color: #c53030;
+        padding: 0.75rem 1.25rem;
+        border-radius: 4px;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .error-message svg {
+        margin-right: 10px;
+    }
+    
+    /* No results styling */
+    .no-results {
+        background-color: white;
+        border-radius: 8px;
+        padding: 3rem 2rem;
+        text-align: center;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    
+    .no-results-icon {
+        margin: 0 auto 1.5rem;
+        color: #ccc;
+        width: 100px;
+        height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f9f9f9;
+        border-radius: 50%;
+    }
+    
+    .no-results h3 {
+        margin-top: 0;
+        color: #333;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .no-results p {
+        color: #666;
+        margin-bottom: 1.5rem;
+    }
+    
+    .suggestion-chips {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+    
+    .suggestion-chip {
+        background-color: #f5f5f5;
+        color: #e67e22;
+        border: 1px solid #e67e22;
+        padding: 0.5rem 1rem;
+        border-radius: 30px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+    }
+    
+    .suggestion-chip:hover {
+        background-color: #e67e22;
+        color: white;
+    }
+    
+    /* Results styling */
+    .results-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+    
+    .results-header h3 {
+        margin: 0;
+        font-size: 1.4rem;
+        color: #333;
+    }
+    
+    .search-tag {
+        display: inline-flex;
+        align-items: center;
+        background-color: #f0f0f0;
+        padding: 0.4rem 0.8rem;
+        border-radius: 30px;
+        font-size: 0.9rem;
+        color: #666;
+    }
+    
+    .clear-search {
+        margin-left: 10px;
+        font-size: 1.2rem;
+        color: #999;
+        text-decoration: none;
+        line-height: 1;
+    }
+    
+    .clear-search:hover {
+        color: #e67e22;
+    }
+    
+    .recipe-count-display {
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+        color: #777;
+    }
+    
+    /* Recipe grid and cards */
+    .recipe-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 2rem;
+    }
+    
+    .recipe-card {
+        background-color: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .recipe-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .recipe-card-inner {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+    
+    .recipe-thumbnail {
+        position: relative;
+        padding-bottom: 60%;
+        background-color: #f8f0e5;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .recipe-icon {
+        position: absolute;
+        width: 40px;
+        height: 40px;
+        color: rgba(230, 126, 34, 0.2);
+    }
+    
+    .recipe-initial {
+        position: absolute;
+        font-size: 4rem;
+        font-weight: 700;
+        color: #e67e22;
+        opacity: 0.8;
+    }
+    
+    .recipe-card:hover .recipe-thumbnail {
+        background-color: #f5e6d3;
+    }
+    
+    .recipe-content {
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+    
+    .recipe-content h3 {
+        margin-top: 0;
+        margin-bottom: 0.75rem;
+        font-size: 1.25rem;
+        line-height: 1.3;
+    }
+    
+    .recipe-content h3 a {
+        color: #333;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+    
+    .recipe-content h3 a:hover {
+        color: #e67e22;
+    }
+    
+    .recipe-meta {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+        color: #777;
+        font-size: 0.9rem;
+    }
+    
+    .meta-item {
+        display: flex;
+        align-items: center;
+        margin-right: 1rem;
+    }
+    
+    .meta-item .icon {
+        margin-right: 4px;
+    }
+    
+    .recipe-ingredients {
+        color: #666;
+        font-size: 0.95rem;
+        margin-bottom: 1rem;
+        flex: 1;
+    }
+    
+    .recipe-actions {
+        margin-top: auto;
+    }
+    
+    /* Buttons */
+    .btn {
+        display: inline-block;
+        padding: 0.6rem 1.2rem;
+        border-radius: 4px;
+        font-weight: 600;
+        text-align: center;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-primary {
+        background-color: #e67e22;
+        color: white;
+        border: none;
+    }
+    
+    .btn-primary:hover {
+        background-color: #d35400;
+    }
+    
+    .btn-secondary {
+        background-color: transparent;
+        color: #e67e22;
+        border: 1px solid #e67e22;
+    }
+    
+    .btn-secondary:hover {
+        background-color: #e67e22;
+        color: white;
+    }
+    
+    /* Search suggestions */
+    .search-suggestions {
+        margin-top: 2rem;
+    }
+    
+    .search-suggestions h3 {
+        font-size: 1.3rem;
+        color: #333;
+        margin-bottom: 1rem;
+    }
+    
+    .popular-ingredients {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 2.5rem;
+    }
+    
+    .ingredient-tag {
+        display: flex;
+        align-items: center;
+        background-color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .ingredient-tag:hover {
+        background-color: #fff5eb;
+        box-shadow: 0 2px 8px rgba(230, 126, 34, 0.15);
+    }
+    
+    .ingredient-tag svg {
+        margin-right: 8px;
+        color: #e67e22;
+    }
+    
+    .quick-ideas {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .idea-card {
+        background-color: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        cursor: pointer;
+        transition: all 0.2s;
+        text-align: center;
+    }
+    
+    .idea-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .idea-icon {
+        color: #e67e22;
+        margin-bottom: 1rem;
+    }
+    
+    .idea-card h4 {
+        margin: 0 0 0.5rem 0;
+        color: #333;
+    }
+    
+    .idea-card p {
+        margin: 0;
+        color: #777;
+        font-size: 0.9rem;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .search-form {
+            flex-direction: column;
+        }
+        
+        .search-form button {
+            padding: 0.75rem;
+        }
+        
+        .results-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .search-tag {
+            margin-top: 0.5rem;
+        }
+        
+        .recipe-grid {
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .quick-ideas {
+            grid-template-columns: 1fr;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .recipe-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .section-header h2 {
+            font-size: 1.75rem;
+        }
+    }
+</style>
+
+<%- include('../partials/footer') %>

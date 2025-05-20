@@ -1,0 +1,34 @@
+<%- include('../partials/header') %>
+    <section class="image-test">
+        <h2>Image Testing</h2>
+        <p>Verifying image paths and display</p>
+        
+        <div class="test-results">
+            <% recipes.forEach(recipe => { %>
+                <div class="test-card">
+                    <h3><%= recipe.Title %></h3>
+                    <p><strong>Image Path:</strong> <%= recipe.imagePath %></p>
+                    <div class="image-display">
+                        <img src="<%= recipe.imagePath %>" alt="<%= recipe.Title %>"
+                             onerror="this.parentElement.innerHTML='<div class=\'image-error\'>Failed to load image</div>'">
+                    </div>
+                    <p><strong>Status:</strong> <span class="status-ok">Testing...</span></p>
+                </div>
+            <% }); %>
+        </div>
+    </section>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.test-card img').forEach(img => {
+                img.onload = function() {
+                    this.closest('.test-card').querySelector('.status-ok').textContent = 'Loaded successfully';
+                    this.closest('.test-card').querySelector('.status-ok').style.color = 'green';
+                };
+                img.onerror = function() {
+                    this.closest('.test-card').querySelector('.status-ok').textContent = 'Failed to load';
+                    this.closest('.test-card').querySelector('.status-ok').style.color = 'red';
+                };
+            });
+        });
+    </script>
+<%- include('../partials/footer') %>

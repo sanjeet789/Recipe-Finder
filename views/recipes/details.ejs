@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Details | Your Recipe App</title>
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --primary-hover: #4338ca;
+            --accent-color: #f97316;
+            --accent-hover: #ea580c;
+            --success-color: #10b981;
+            --error-color: #ef4444;
+            --background: #f9fafb;
+            --card-bg: #ffffff;
+            --text-color: #1f2937;
+            --text-muted: #6b7280;
+            --border-color: #e5e7eb;
+            --favorite-color: #f43f5e;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        /* Recipe Container */
+        .recipe-container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .recipe-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+            animation: fade-in 0.6s ease-out;
+        }
+
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Recipe Header */
+        .recipe-header {
+            position: relative;
+            background-color: var(--primary-color);
+            background-image: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            color: white;
+            padding: 2.5rem 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .recipe-header h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin: 0;
+            max-width: 80%;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .favorite-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 0.5rem 1.25rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .favorite-btn:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .favorite-btn.favorited {
+            background-color: var(--favorite-color);
+        }
+
+        .favorite-icon {
+            display: inline-block;
+            font-size: 1.25rem;
+            transition: transform 0.3s ease;
+        }
+
+        .favorite-btn:hover .favorite-icon {
+            transform: scale(1.2);
+        }
+
+        /* Recipe Meta */
+        .recipe-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+            background-color: rgba(79, 70, 229, 0.03);
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .meta-icon {
+            color: var(--primary-color);
+        }
+
+        /* Recipe Content */
+        .recipe-content {
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .recipe-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Ingredients */
+        .ingredients {
+            padding-right: 2rem;
+            border-right: 1px solid var(--border-color);
+            animation: slide-in 0.5s ease-out 0.2s both;
+        }
+
+        @media (max-width: 768px) {
+            .ingredients {
+                padding-right: 0;
+                padding-bottom: 2rem;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+            }
+        }
+
+        .ingredients h3 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--accent-color);
+            display: inline-block;
+        }
+
+        .ingredients-list {
+            list-style: none;
+        }
+
+        .ingredient-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            padding: 0.75rem;
+            background-color: #f9fafb;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .ingredient-item:hover {
+            background-color: #f3f4f6;
+            transform: translateX(5px);
+        }
+
+        .ingredient-item:before {
+            content: "•";
+            color: var(--accent-color);
+            font-weight: bold;
+            margin-right: 0.75rem;
+        }
+
+        .ingredient-checkbox {
+            margin-right: 0.75rem;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--border-color);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .ingredient-checkbox:checked {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+
+        .ingredient-checkbox:checked:after {
+            content: "";
+            position: absolute;
+            left: 5px;
+            top: 2px;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+
+        .ingredient-text {
+            transition: all 0.2s;
+        }
+
+        .ingredient-checkbox:checked + .ingredient-text {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        /* Instructions */
+        .instructions {
+            animation: slide-in 0.5s ease-out 0.4s both;
+        }
+
+        @keyframes slide-in {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .instructions h3 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary-color);
+            display: inline-block;
+        }
+
+        .instructions-list {
+            list-style: none;
+            counter-reset: instruction-counter;
+        }
+
+        .instruction-item {
+            position: relative;
+            margin-bottom: 1.5rem;
+            padding: 1rem 1rem 1rem 3rem;
+            background-color: #f9fafb;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .instruction-item:hover {
+            background-color: #f3f4f6;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .instruction-item:before {
+            counter-increment: instruction-counter;
+            content: counter(instruction-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 2.5rem;
+            height: 100%;
+            background-color: var(--primary-color);
+            color: white;
+            border-top-left-radius: 8px;
+            border-bottom-left-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .step-checkbox {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+            margin-right: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: absolute;
+            right: 1rem;
+            top: 1rem;
+        }
+
+        .step-checkbox:checked {
+            background-color: var(--success-color);
+            border-color: var(--success-color);
+        }
+
+        .step-checkbox:checked:after {
+            content: "";
+            position: absolute;
+            left: 6px;
+            top: 3px;
+            width: 6px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+
+        .instruction-text {
+            transition: all 0.2s;
+        }
+
+        .step-checkbox:checked ~ .instruction-text {
+            color: var(--text-muted);
+        }
+
+        /* Tools & Tips */
+        .recipe-tools-tips {
+            padding: 2rem;
+            border-top: 1px solid var(--border-color);
+            background-color: #f9fafb;
+            animation: fade-in 0.5s ease-out 0.6s both;
+        }
+
+        .tools-tips-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .tab-button {
+            padding: 0.5rem 1rem;
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab-button.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fade-in 0.3s ease-out;
+        }
+
+        .tools-list, .tips-list {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .tool-item, .tip-item {
+            padding: 0.75rem;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .tool-item:before {
+            content: "🍳";
+            margin-right: 0.5rem;
+        }
+
+        .tip-item:before {
+            content: "💡";
+            margin-right: 0.5rem;
+        }
+
+        /* Print & Share */
+        .recipe-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            padding: 1rem 2rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background-color: white;
+            color: var(--text-color);
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            background-color: #f3f4f6;
+        }
+
+        .print-btn:hover {
+            border-color: var(--text-color);
+        }
+
+        .share-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .share-btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        @media print {
+            .recipe-header {
+                background: white !important;
+                color: black !important;
+            }
+            .recipe-tools-tips, .recipe-actions, .header-actions {
+                display: none !important;
+            }
+            .recipe-card {
+                box-shadow: none !important;
+            }
+        }
+
+        /* Override for better contrast on small screens */
+        @media (max-width: 480px) {
+            .recipe-header {
+                padding: 1.5rem;
+            }
+            .recipe-content {
+                padding: 1.5rem;
+                gap: 1.5rem;
+            }
+            .recipe-header h2 {
+                font-size: 1.5rem;
+                max-width: 100%;
+            }
+            .instruction-item {
+                padding: 1rem 1rem 1rem 2.5rem;
+            }
+            .instruction-item:before {
+                width: 2rem;
+            }
+        }
+
+        /* Animation for ingredient checking */
+        @keyframes check-bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .ingredient-checkbox:checked {
+            animation: check-bounce 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header would be included here -->
+    
+    <div class="recipe-container">
+        <div class="recipe-card">
+            <div class="recipe-header">
+                <h2 id="recipe-title">Delicious Recipe Title</h2>
+                <div class="header-actions">
+                    <button id="favorite-btn" class="favorite-btn">
+                        <span class="favorite-icon">♡</span>
+                        <span class="favorite-text">Add to Favorites</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="recipe-meta">
+                <div class="meta-item">
+                    <span class="meta-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                    </span>
+                    <span id="prep-time">Prep: 15 mins</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 2a10 10 0 1 0 10 10H12V2z"></path>
+                        </svg>
+                    </span>
+                    <span id="cook-time">Cook: 30 mins</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                    </span>
+                    <span id="servings">Serves: 4</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 3v18h18"></path>
+                            <path d="M13 17V9"></path>
+                            <path d="M18 17V5"></path>
+                            <path d="M8 17v-3"></path>
+                        </svg>
+                    </span>
+                    <span id="difficulty">Difficulty: Medium</span>
+                </div>
+            </div>
+            
+            <div class="recipe-content">
+                <div class="ingredients">
+                    <h3>Ingredients</h3>
+                    <ul class="ingredients-list" id="ingredients-list">
+                        <!-- Ingredients will be populated here -->
+                    </ul>
+                </div>
+                
+                <div class="instructions">
+                    <h3>Instructions</h3>
+                    <ol class="instructions-list" id="instructions-list">
+                        <!-- Instructions will be populated here -->
+                    </ol>
+                </div>
+            </div>
+            
+            <div class="recipe-tools-tips">
+                <div class="tools-tips-tabs">
+                    <button class="tab-button active" data-tab="tools">Recommended Tools</button>
+                    <button class="tab-button" data-tab="tips">Chef's Tips</button>
+                </div>
+                
+                <div class="tab-content active" id="tools-tab">
+                    <ul class="tools-list">
+                        <li class="tool-item">Large mixing bowl</li>
+                        <li class="tool-item">Chef's knife</li>
+                        <li class="tool-item">Cutting board</li>
+                        <li class="tool-item">Measuring cups and spoons</li>
+                    </ul>
+                </div>
+                
+                <div class="tab-content" id="tips-tab">
+                    <ul class="tips-list">
+                        <li class="tip-item">Prepare all ingredients before starting to cook</li>
+                        <li class="tip-item">Taste and adjust seasonings before serving</li>
+                        <li class="tip-item">Allow meat to rest before slicing</li>
+                        <li class="tip-item">Store leftovers in an airtight container</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="recipe-actions">
+                <button class="action-btn print-btn" id="print-recipe">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                        <rect x="6" y="14" width="12" height="8"></rect>
+                    </svg>
+                    Print Recipe
+                </button>
+                <button class="action-btn share-btn" id="share-recipe">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="18" cy="5" r="3"></circle>
+                        <circle cx="6" cy="12" r="3"></circle>
+                        <circle cx="18" cy="19" r="3"></circle>
+                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                    </svg>
+                    Share Recipe
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer would be included here -->
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize with sample data (in a real app, this would come from your server)
+            const recipeData = {
+                id: '123',
+                title: 'Delicious Pasta Carbonara',
+                isFavorite: false,
+                prepTime: '15 mins',
+                cookTime: '20 mins',
+                servings: 4,
+                difficulty: 'Medium',
+                ingredients: [
+                    '400g spaghetti',
+                    '200g pancetta or guanciale, diced',
+                    '4 large eggs',
+                    '100g Pecorino Romano cheese, grated',
+                    '50g Parmesan cheese, grated',
+                    '2 garlic cloves, minced',
+                    'Black pepper, freshly ground',
+                    'Salt, to taste',
+                    'Olive oil'
+                ],
+                instructions: [
+                    'Bring a large pot of salted water to boil and cook pasta according to package instructions until al dente.',
+                    'While pasta is cooking, heat a large skillet over medium heat and add a small amount of olive oil.',
+                    'Add the diced pancetta or guanciale to the skillet and cook until crispy, about 5-7 minutes.',
+                    'In a bowl, whisk together eggs, grated cheeses, and plenty of freshly ground black pepper.',
+                    'When pasta is done, reserve 1 cup of pasta water, then drain pasta and add it immediately to the skillet with the pancetta.',
+                    'Remove the skillet from heat, and working quickly, add the egg and cheese mixture, tossing constantly with tongs to avoid scrambling the eggs.',
+                    'Add a splash of reserved pasta water as needed to create a creamy sauce that coats the pasta.',
+                    'Serve immediately, topped with additional grated cheese and black pepper.'
+                ]
+            };
+            
+            // Populate recipe data
+            document.getElementById('recipe-title').textContent = recipeData.title;
+            document.getElementById('prep-time').textContent = `Prep: ${recipeData.prepTime}`;
+            document.getElementById('cook-time').textContent = `Cook: ${recipeData.cookTime}`;
+            document.getElementById('servings').textContent = `Serves: ${recipeData.servings}`;
+            document.getElementById('difficulty').textContent = `Difficulty: ${recipeData.difficulty}`;
+            
+            // Set favorite status
+            const favoriteBtn = document.getElementById('favorite-btn');
+            updateFavoriteButton(recipeData.isFavorite);
+            
+            // Populate ingredients
+            const ingredientsList = document.getElementById('ingredients-list');
+            recipeData.ingredients.forEach(ingredient => {
+                const li = document.createElement('li');
+                li.className = 'ingredient-item';
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.className = 'ingredient-checkbox';
+                
+                const span = document.createElement('span');
+                span.className = 'ingredient-text';
+                span.textContent = ingredient;
+                
+                li.appendChild(checkbox);
+                li.appendChild(span);
+                ingredientsList.appendChild(li);
+            });
+            
+            // Populate instructions
+            const instructionsList = document.getElementById('instructions-list');
+            recipeData.instructions.forEach((instruction, index) => {
+                const li = document.createElement('li');
+                li.className = 'instruction-item';
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.className = 'step-checkbox';
+                checkbox.id = `step-${index + 1}`;
+                
+                const text = document.createElement('div');
+                text.className = 'instruction-text';
+                text.textContent = instruction;
+                
+                li.appendChild(checkbox);
+                li.appendChild(text);
+                instructionsList.appendChild(li);
+            });
+            
+            // Tab switching
+            const tabButtons = document.querySelectorAll('.tab-button');
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all tabs
+                    document.querySelectorAll('.tab-button').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    
+                    // Add active class to current tab
+                    this.classList.add('active');
+                    document.getElementById(`${this.dataset.tab}-tab`).classList.add('active');
+                });
+            });
+            
+            // Toggle favorite
+            favoriteBtn.addEventListener('click', function() {
+                recipeData.isFavorite = !recipeData.isFavorite;
+                updateFavoriteButton(recipeData.isFavorite);
+                
+                // In a real app, you would make an API call here
+                console.log(`Recipe ${recipeData.id} favorite status: ${recipeData.isFavorite}`);
+                
+                // Add heart animation
+                const icon = this.querySelector('.favorite-icon');
+                icon.style.animation = 'none';
+                setTimeout(() => {
+                    icon.style.animation = 'check-bounce 0.3s';
+                }, 10);
+            });
+            
+            // Function to update favorite button appearance
+            function updateFavoriteButton(isFavorite) {
+                const icon = favoriteBtn.querySelector('.favorite-icon');
+                const text = favoriteBtn.querySelector('.favorite-text');
+                
+                if (isFavorite) {
+                    favoriteBtn.classList.add('favorited');
+                    icon.textContent = '❤️';
+                    text.textContent = 'Remove from Favorites';
+                } else {
+                    favoriteBtn.classList.remove('favorited');
+                    icon.textContent = '♡';
+                    text.textContent = 'Add to Favorites';
+                }
+            }
+            
+            // Print recipe
+            document.getElementById('print-recipe').addEventListener('click', function() {
+                window.print();
+            });
+            
+            // Share recipe
+            document.getElementById('share-recipe').addEventListener('click', function() {
+                if (navigator.share) {
+                    navigator.share({
+                        title: recipeData.title,
+                        text: `Check out this recipe for ${recipeData.title}!`,
+                        url: window.location.href
+                    }).catch(console.error);
+                } else {
+                    // Fallback for browsers that don't support Web Share API
+                    const tempInput = document.createElement('input');
+                    document.body.appendChild(tempInput);
+                    tempInput.value = window.location.href;
+                    tempInput.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(tempInput);
+                    
+                    alert('Recipe URL copied to clipboard!');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
