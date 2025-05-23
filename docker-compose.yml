@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  recipe-finder:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - SESSION_SECRET=your-secret-key
+    restart: unless-stopped
