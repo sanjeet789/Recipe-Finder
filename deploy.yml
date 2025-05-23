@@ -1,0 +1,33 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup SSH key
+        run: |
+          echo "${{ secrets.EC2_KEY }}" | base64 --decode > key.pem
+          chmod 400 key.pem
+
+      - name: Deploy to EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << 'EOF'
+            if [ ! -d "Recipe-Finder" ]; then
+              git clone https://github.com/sanjeet789/Recipe-Finder.git
+            fi
+            cd Recipe-Finder
+            git pull origin main
+            npm install
+            npm run build
+            pm2 stop recipe-finder || true
+            pm2 start npm --name "recipe-finder" -- start
+          EOF
