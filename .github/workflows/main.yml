@@ -2,9 +2,9 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [main]
+    branches: [master]  # Changed from main to master
   pull_request:
-    branches: [main]
+    branches: [master]  # Changed from main to master
   workflow_dispatch:
     inputs:
       environment:
@@ -70,7 +70,7 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
     environment:
       name: ${{ github.event.inputs.environment || 'staging' }}
 
@@ -114,9 +114,13 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i key.pem $EC2_USER@$EC2_HOST << EOF
             echo "Deploying to EC2 instance..."
             cd $EC2_PROJECT_DIR || exit 1
-            git pull origin main || exit 1
+            git stash
+            git pull origin master || exit 1
             npm install || exit 1
-            # Add your app restart commands here, for example:
-            # pm2 restart all || echo "pm2 restart failed"
+            # Example restart command, adjust to your stack:
+            pm2 restart all || echo "pm2 restart failed"
             echo "Deployment finished successfully!"
           EOF
+
+      - name: Cleanup SSH key
+        run: rm -f key.pem
