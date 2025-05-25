@@ -32,8 +32,8 @@ def extract_ingredients(user_input):
 
 def load_model_files():
     """Load the vectorizer and ingredient vectors with specific paths"""
-    vectorizer_path = r"C:\Devops Project\final\recipe-finder\ml_model\vectorizer.pkl"
-    vectors_path = r"C:\Devops Project\final\recipe-finder\ml_model\ingredient_vectors.pkl"
+    vectorizer_path = r"/home/ec2-user/Recipe-Finder/ml_model/vectorizer.pkl"
+    vectors_path = r"/home/ec2-user/Recipe-Finder/ml_model/ingredient_vectors.pkl"
     
     if not os.path.exists(vectorizer_path):
         raise FileNotFoundError(f"Vectorizer file not found at {vectorizer_path}")
