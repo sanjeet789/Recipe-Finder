@@ -1,31 +1,90 @@
-name: Deploy to EC2
+name: CI/CD Pipeline
 
 on:
-  workflow_dispatch: 
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '18.x'
+
+permissions:
+  contents: write
+  deployments: write
+  id-token: write
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Setup SSH key
-        run: |
-          echo "${{ secrets.EC2_KEY }}" | base64 --decode > key.pem
-          chmod 400 key.pem
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
 
-      - name: Deploy to EC2
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Cache Node.js modules
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    environment:
+      name: ${{ github.event.inputs.environment || 'staging' }}
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npm run build
+
+      - name: Deploy to ${{ github.event.inputs.environment || 'staging' }}
+        id: deployment
         run: |
-          ssh -o StrictHostKeyChecking=no -i key.pem ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << 'EOF'
-            if [ ! -d "Recipe-Finder" ]; then
-              git clone https://github.com/sanjeet789/Recipe-Finder.git
-            fi
-            cd Recipe-Finder
-            git pull origin main
-            npm install
-            npm run build
-            pm2 stop recipe-finder || true
-            pm2 start npm --name "recipe-finder" -- start
-          EOF
+          echo "Deploying to ${{ github.event.inputs.environment || 'staging' }} environment..."
+          # Add your deployment commands here
+          echo "https://your-deployment-url.com" > deployment_url.txt
+
+      - name: Upload deployment URL
+        uses: actions/upload-artifact@v3
+        with:
+          name: deployment-url
+          path: deployment_url.txt
