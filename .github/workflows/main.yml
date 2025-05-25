@@ -101,8 +101,22 @@ jobs:
         run: |
           if [ -f package.json ]; then npm run build || echo "No build script"; fi
 
-      - name: Deploy application
+      - name: Deploy application to EC2
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+          EC2_PROJECT_DIR: ${{ secrets.EC2_PROJECT_DIR }}
         run: |
-          echo "⚙️ Running deployment script..."
-          # Example deployment command (replace with your actual command)
-          echo "Deployed to staging/production successfully!"
+          echo "$SSH_PRIVATE_KEY" > key.pem
+          chmod 600 key.pem
+
+          ssh -o StrictHostKeyChecking=no -i key.pem $EC2_USER@$EC2_HOST << EOF
+            echo "Deploying to EC2 instance..."
+            cd $EC2_PROJECT_DIR || exit 1
+            git pull origin main || exit 1
+            npm install || exit 1
+            # Add your app restart commands here, for example:
+            # pm2 restart all || echo "pm2 restart failed"
+            echo "Deployment finished successfully!"
+          EOF
