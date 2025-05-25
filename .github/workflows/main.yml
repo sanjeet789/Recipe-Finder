@@ -115,7 +115,7 @@ jobs:
             echo "Deploying to EC2 instance..."
             cd $EC2_PROJECT_DIR || exit 1
             git stash
-            git pull origin master || exit 1
+            git pull --rebase origin master || exit 1
             npm install || exit 1
             # Example restart command, adjust to your stack:
             pm2 restart all || echo "pm2 restart failed"
