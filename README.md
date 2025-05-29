@@ -1,7 +1,9 @@
-🍲 Recipe Finder
+# 🍲 Recipe Finder
+
 A full-stack web application that allows users to search for recipes based on ingredients. This project is integrated with a fully automated CI/CD pipeline using GitHub Actions and deployed to an AWS EC2 instance.
 
-🚀 Features
+
+# 🚀 Features
 Search for recipes by ingredient or keyword
 
 Responsive user interface with EJS templating
@@ -12,7 +14,8 @@ Real-time deployment via GitHub Actions to AWS EC2
 
 Process management with PM2
 
-🛠️ Tech Stack
+
+# 🛠️ Tech Stack
 Component	Technology
 Frontend	EJS, CSS, JavaScript
 Backend	Node.js, Express
@@ -21,19 +24,21 @@ Deployment	AWS EC2, GitHub Actions
 Process Manager	PM2
 Version Control	Git & GitHub
 
-🏗️ Project Structure
-bash
-Copy
-Edit
+
+# 🏗️ Project Structure
+
+```text
 recipe-finder/
 ├── public/               # Static files (CSS, images)
 ├── views/                # EJS templates
 ├── routes/               # Express route handlers
-├── app.js                # Entry point
-├── Dockerfile            # (optional)
+├── app.js                # Main application entry point
+├── Dockerfile            # Docker configuration (optional)
 ├── requirements.txt      # Python dependencies (if any)
-└── .github/workflows/    # GitHub Actions CI/CD pipeline
-⚙️ CI/CD Workflow
+└── .github/
+    └── workflows/        # GitHub Actions CI/CD pipeline (main.yml)
+``` 
+# ⚙️ CI/CD Workflow
 On push to master:
 
 Installs Node & Python dependencies
@@ -43,7 +48,7 @@ SSH to EC2
 Pulls changes and restarts app with PM2
 
 Example:
-
+```
 yaml
 Copy
 Edit
@@ -61,8 +66,10 @@ jobs:
         run: |
           ssh -i key.pem ec2-user@ec2-host 'cd project && git pull && npm install && pm2 restart all'
 Full file in .github/workflows/main.yml
+```
 
-☁️ Deployment
+
+# ☁️ Deployment
 AWS EC2 Setup:
 
 Ubuntu instance with Node.js, Python, Git
@@ -79,7 +86,10 @@ EC2_PROJECT_DIR
 
 EC2_SSH_KEY
 
-🧪 Running Locally
+
+
+
+# 🧪 Running Locally
 bash
 Copy
 Edit
@@ -89,13 +99,16 @@ npm install
 node app.js
 Visit http://localhost:3000
 
-🔐 Environment Variables
-Create a .env file for secrets or API keys if needed.
 
-📸 Screenshots
-Add UI and deployment screenshots here.
+# 📸 Screenshots
+![Screenshot 2025-05-29 115040](https://github.com/user-attachments/assets/debcb936-8e26-4a69-aec4-d67b4de12fc6)
+![Screenshot 2025-05-29 115049](https://github.com/user-attachments/assets/88705d2b-3d67-4f53-b5c3-0ea7df558f29)
+![Screenshot 2025-05-29 115056](https://github.com/user-attachments/assets/826b2ab2-caf7-408f-8e35-290db8b0fa53)
+![Screenshot 2025-05-29 115106](https://github.com/user-attachments/assets/d683a2bc-416f-4628-8f6f-2b3796d3268c)
 
-🧠 Lessons Learned
+
+
+# 🧠 Lessons Learned
 GitHub Actions automation
 
 AWS EC2 setup and SSH auth
