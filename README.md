@@ -1,9 +1,9 @@
-# 🍲 Recipe Finder
+#  Recipe Finder
 
 A full-stack web application that allows users to search for recipes based on ingredients. This project is integrated with a fully automated CI/CD pipeline using GitHub Actions and deployed to an AWS EC2 instance.
 
 
-# 🚀 Features
+#  Features
 Search for recipes by ingredient or keyword
 
 Responsive user interface with EJS templating
@@ -15,7 +15,7 @@ Real-time deployment via GitHub Actions to AWS EC2
 Process management with PM2
 
 
-# 🛠️ Tech Stack
+#  Tech Stack
 Component	Technology
 Frontend	EJS, CSS, JavaScript
 Backend	Node.js, Express
@@ -25,7 +25,7 @@ Process Manager	PM2
 Version Control	Git & GitHub
 
 
-# 🏗️ Project Structure
+#  Project Structure
 
 ```text
 recipe-finder/
@@ -38,7 +38,7 @@ recipe-finder/
 └── .github/
     └── workflows/        # GitHub Actions CI/CD pipeline (main.yml)
 ``` 
-# ⚙️ CI/CD Workflow
+#  CI/CD Workflow
 On push to master:
 
 Installs Node & Python dependencies
@@ -69,7 +69,7 @@ Full file in .github/workflows/main.yml
 ```
 
 
-# ☁️ Deployment
+#  Deployment
 AWS EC2 Setup:
 
 Ubuntu instance with Node.js, Python, Git
@@ -89,7 +89,7 @@ EC2_SSH_KEY
 
 
 
-# 🧪 Running Locally
+# Running Locally
 bash
 Copy
 Edit
@@ -100,7 +100,7 @@ node app.js
 Visit http://localhost:3000
 
 
-# 📸 Screenshots
+# Screenshots
 ![Screenshot 2025-05-29 115040](https://github.com/user-attachments/assets/debcb936-8e26-4a69-aec4-d67b4de12fc6)
 ![Screenshot 2025-05-29 115049](https://github.com/user-attachments/assets/88705d2b-3d67-4f53-b5c3-0ea7df558f29)
 ![Screenshot 2025-05-29 115056](https://github.com/user-attachments/assets/826b2ab2-caf7-408f-8e35-290db8b0fa53)
@@ -108,7 +108,7 @@ Visit http://localhost:3000
 
 
 
-# 🧠 Lessons Learned
+#  Lessons Learned
 GitHub Actions automation
 
 AWS EC2 setup and SSH auth
