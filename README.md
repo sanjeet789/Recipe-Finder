@@ -1,6 +1,6 @@
 #  Recipe Finder
 
-A full-stack web application that allows users to search for recipes based on ingredients. This project is integrated with a fully automated CI/CD pipeline using GitHub Actions and deployed to an AWS EC2 instance.
+A full-stack web application that enables users to discover recipes by entering ingredients or keywords. The project is fully integrated with an automated CI/CD pipeline using GitHub Actions and is deployed on an AWS EC2 instance.
 
 
 #  Features
