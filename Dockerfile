@@ -1,50 +1,40 @@
-# Stage 1: Build the application
-FROM node:18-alpine as builder
+# ---------- Base image for building frontend ----------
+FROM node:18 AS frontend-builder
 
+# Set working directory
 WORKDIR /app
 
-# Install Python and build dependencies
-RUN apk add --no-cache python3 py3-pip build-base
-
-# Copy package files first for better caching
+# Copy package files and install dependencies
 COPY package*.json ./
-
-# Install all dependencies including devDependencies
 RUN npm install
 
-# Copy the rest of the files
+# Copy the rest of the frontend code and build it
 COPY . .
+RUN npm run build
 
-# Stage 2: Production image
-FROM node:18-alpine
+# ---------- Backend stage with Node.js and Python ----------
+FROM node:18
 
-WORKDIR /app
+# Install Python
+RUN apt-get update && apt-get install -y python3 python3-pip && \
+    ln -s /usr/bin/python3 /usr/bin/python && \
+    pip install --upgrade pip
 
-# Install Python runtime
-RUN apk add --no-cache python3
+# Set working directory
+WORKDIR /usr/src/app
 
-# Copy package files
-COPY package*.json ./
+# Copy Python requirements and install if present
+COPY requirements.txt ./
+RUN if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-# Install production dependencies only
-RUN npm install --only=production
+# Copy backend code and built frontend assets
+COPY --from=frontend-builder /app /usr/src/app
 
-# Copy built application
-COPY --from=builder /app .
+# Install backend Node dependencies
+RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
-# Copy Python ML model files
-COPY --from=builder /app/ml_model ./ml_model
-
-# Expose port
+# Expose the port your backend listens on (e.g., 3000)
 EXPOSE 3000
 
-# Environment variables
-ENV NODE_ENV=production
-ENV PORT=3000
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-    CMD wget --quiet --tries=1 --spider http://localhost:3000/ || exit 1
-
-# Run the application
+# Start your app (adjust if needed)
 CMD ["npm", "start"]
